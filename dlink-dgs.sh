@@ -27,8 +27,6 @@ echo_error() {
 
 # FIXME Reverse-engineer this crappy obfuscated JS code to generate the MD5 hash
 jsmd5() {
-  cd "$(cd "$(dirname "$0")" >/dev/null 2>&1; pwd -P)" || exit 9
-
   {
     local suffix="http"
     # cat mm.js
@@ -37,6 +35,7 @@ jsmd5() {
   } | node
 
   # NOTE Alternative that's also awkward
+  # cd "$(cd "$(dirname "$0")" >/dev/null 2>&1; pwd -P)" || exit 9
   # node md5-weird.js \
   #   --host "$SWITCH_HOSTNAME" \
   #   --port "$PORT" \
