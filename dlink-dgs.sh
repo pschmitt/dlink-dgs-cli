@@ -135,6 +135,11 @@ poe_state() {
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]
 then
+  if [[ -n "$DEBUG" ]]
+  then
+    set -x
+  fi
+
   # Default values
   USERNAME="${USERNAME:-admin}"
   PORT="${PORT:-80}"
