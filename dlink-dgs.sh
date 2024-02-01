@@ -207,13 +207,14 @@ then
       ;;
     poe)
       shift
-      login
+
       if [[ "$#" -eq 0 ]] || [[ "$1" =~ ^(status|state)$ ]]
       then
         poe_state
         exit "$?"
       fi
 
+      login
       poe_action "$@"
       ;;
     *)
