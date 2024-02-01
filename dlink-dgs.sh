@@ -128,7 +128,7 @@ poe_state() {
   # TODO remove the jsonrepair dependency
   curl -fsSL -b "$COOKIE_JAR" \
     "${API_URL}/system/poe/366_poe_setting.asp" | \
-    awk '/^ +poe_setting =/{flag=1; next} /;/{flag=0} flag' | \
+    awk '/^ +poe_setting =/,/;/' | grep 'eth' | sed 's#;##' | \
     jsonrepair | \
     jq -n '[input[] | {(.[0]): (.[1] == "Enabled")} ] | add'
 }
