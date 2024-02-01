@@ -11,7 +11,7 @@ usage() {
   echo "  -T, --tls          Use HTTPS"
   echo
   echo "Actions:"
-  echo "  poe PORT STATE     Set POE state (PORT: 1-24, STATE: on|off)"
+  echo "  poe PORT STATE     Set POE state (PORT: 1-24, STATE: on|off|status)"
   echo "  poe [status]       Get current POE states"
 }
 
@@ -101,6 +101,10 @@ poe_action() {
     off|disable|0)
       poe_state=0
       poe_state_human_readable="OFF"
+      ;;
+    state|status)
+      poe_state | jq --arg i "$poe_port" '.["eth" + $i]'
+      return "$?"
       ;;
   esac
 
