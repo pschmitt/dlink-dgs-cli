@@ -83,8 +83,8 @@ login() {
 }
 
 poe_action() {
-  local poe_port="${1:-12}" # port 12 by default
-  local poe_state="${2:-1}" # 1: on, 0: off
+  local poe_port="$1"  # port number (1-12)
+  local poe_state="$2" # 1: on, 0: off
   local poe_state_human_readable
 
   if [[ ! $poe_port =~ ^[0-9]+$ ]]
@@ -102,7 +102,7 @@ poe_action() {
       poe_state=0
       poe_state_human_readable="OFF"
       ;;
-    state|status)
+    state|status|'')
       poe_state | jq --arg i "$poe_port" '.["eth" + $i]'
       return "$?"
       ;;
