@@ -13,6 +13,7 @@ usage() {
   echo "Actions:"
   echo "  poe PORT STATE     Set POE state (PORT: 1-24, STATE: on|off|status)"
   echo "  poe [status]       Get current POE states"
+  echo "  poe power          Display current POE power readings"
 }
 
 echo_info() {
@@ -133,6 +134,24 @@ poe_state() {
     jq -n '[input[] | {(.[0]): (.[1] == "Enabled")} ] | add'
 }
 
+poe_power_state() {
+  curl -fsSL -b "$COOKIE_JAR" \
+    "${API_URL}/system/poe/366_poe_status.asp" | \
+    awk '/^ +poe_status =/,/;/' | sed -e 's#poe_status =##' -e 's#;##' | \
+    jsonrepair | \
+    jq '
+      [
+        .[] | {
+          port: .[0],
+          status: .[1],
+          poe_cat: (if .[2] == "N/A" then null else .[2] | tonumber end),
+          max_wattage: .[3] | tonumber,
+          current_power: .[4] | tonumber
+        }
+      ]
+    '
+}
+
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]
 then
   if [[ -n "$DEBUG" ]]
@@ -213,14 +232,21 @@ then
     poe)
       shift
 
-      if [[ "$#" -eq 0 ]] || [[ "$1" =~ ^(status|state)$ ]]
-      then
-        poe_state
-        exit "$?"
-      fi
-
-      login
-      poe_action "$@"
+      case "$1" in
+        status|state|'')
+          poe_state "$@"
+          ;;
+        pow*)
+          poe_power_state "$@"
+          ;;
+        *)
+          login
+          poe_action "$@"
+          ;;
+      esac
+      ;;
+    pow*)
+      poe_power_state
       ;;
     *)
       echo_error "Unknown action: $1"
