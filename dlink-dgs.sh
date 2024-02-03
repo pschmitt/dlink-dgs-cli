@@ -117,6 +117,7 @@ poe_action() {
 
   echo_info "Setting POE port $poe_port to $poe_state_human_readable"
 
+  login
   curl -X POST \
     -b "$COOKIE_JAR" \
     -H 'Content-Type: application/x-www-form-urlencoded; charset=UTF-8' \
@@ -240,7 +241,6 @@ then
           poe_power_state "$@"
           ;;
         *)
-          login
           poe_action "$@"
           ;;
       esac
