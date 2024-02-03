@@ -153,6 +153,16 @@ poe_power_state() {
     '
 }
 
+poe_status() {
+  local poe_state poe_power_state
+  poe_state=$(poe_state)
+  poe_power_state=$(poe_power_state)
+
+  jq --argjson poe_state "$poe_state" '
+    map(. + {"enabled": $poe_state[.port]})
+  ' <<< "$poe_power_state"
+}
+
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]
 then
   if [[ -n "$DEBUG" ]]
@@ -235,18 +245,12 @@ then
 
       case "$1" in
         status|state|'')
-          poe_state "$@"
-          ;;
-        pow*)
-          poe_power_state "$@"
+          poe_status "$@"
           ;;
         *)
           poe_action "$@"
           ;;
       esac
-      ;;
-    pow*)
-      poe_power_state
       ;;
     *)
       echo_error "Unknown action: $1"
