@@ -2,7 +2,7 @@ FROM node:21-alpine
 
 ENV SWITCH_HOSTNAME=10.90.90.90 PORT=80 USERNAME=admin PASSWORD= DEBUG=
 
-RUN apk add --no-cache bash curl jq
+RUN apk add --no-cache bash curl jq yq
 
 RUN npm install -g jsonrepair
 

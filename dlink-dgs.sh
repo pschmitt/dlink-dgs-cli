@@ -11,6 +11,7 @@ usage() {
   echo "  -T, --tls          Use HTTPS"
   echo
   echo "Actions:"
+  echo "  info              Display switch information"
   echo "  poe PORT STATE     Set POE state (PORT: 1-24, STATE: on|off|status)"
   echo "  poe [status]       Get current POE states"
   echo "  poe power          Display current POE power readings"
@@ -81,6 +82,20 @@ login() {
   fi
 
   return 0
+}
+
+switch_info() {
+  local data
+  data=$(curl -fsSL "$API_URL/device_info/366_Device_Info.asp" | \
+    sed -n '/<table/,/<\/table>/p' | \
+    yq --input-format xml -o json '.table.tbody.tr[].td')
+
+  <<< "$data" jq -e '
+  # Transform objects with "+content" into strings
+  map(if type == "object" and has("+content") then .["+content"] else . end)
+  # Create key-value pairs from the array
+  | [. as $d | range(0; $d | length; 2) | {($d[.]): $d[(. + 1)]} ] | add' | \
+    jq -es add  # FIXME We shouldn't need this extra jq call
 }
 
 poe_action() {
@@ -239,6 +254,9 @@ then
     help|--help)
       usage
       exit 0
+      ;;
+    info)
+      switch_info
       ;;
     poe)
       shift
