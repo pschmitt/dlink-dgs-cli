@@ -11,7 +11,7 @@ usage() {
   echo "  -T, --tls          Use HTTPS"
   echo
   echo "Actions:"
-  echo "  info              Display switch information"
+  echo "  info               Display switch information"
   echo "  poe PORT STATE     Set POE state (PORT: 1-24, STATE: on|off|status)"
   echo "  poe [status]       Get current POE states"
   echo "  poe power          Display current POE power readings"
